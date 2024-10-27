@@ -1,6 +1,8 @@
 use std::fmt;
 use rand::Rng;
-use indicatif::{ProgressBar, ProgressIterator, ProgressStyle};
+use indicatif::{ProgressBar, ProgressStyle};
+
+use tabled::{Table, Tabled};
 
 #[derive(Copy, Clone)]
 struct BitString {
@@ -12,6 +14,7 @@ impl BitString {
         Self { data  }
     }
 
+    #[inline(always)]
     fn is_bit_set(&self, index: usize) -> bool {
         (self.data & (1u64 << index)) != 0
     }
@@ -20,6 +23,7 @@ impl BitString {
         self.data.trailing_zeros() as usize
     }
 
+    #[inline(always)]
     fn flip_bit(&mut self, index: usize) {
         self.data ^= 1 << index;
     }
@@ -53,15 +57,47 @@ impl Knapsack {
         self.values.push(value);
     }
 
+    fn print_weights_and_values(&self) {
+        #[derive(Tabled)]
+        struct Item {
+            index: usize,
+            weight: u16,
+            value: u16,
+        }
 
-    fn compute_value_and_weight(&self, subset: BitString) -> (u64, u64) {
-        return (0..self.total_items).fold((0, 0), |acc, index| {
-            if subset.is_bit_set(index) {
-                (acc.0 + self.values[index] as u64, acc.1 + self.weights[index] as u64)
-            } else {
-                acc
+        let items: Vec<Item> = (0..self.total_items)
+                .map(|i| Item {
+                    index: i,
+                    weight: self.weights[i],
+                    value: self.values[i],
+                })
+                .collect();
+        let table = Table::new(&items).to_string();
+        println!("{}", table);
+    }
+
+    fn print_best_subset(&self, subset: BitString) {
+        #[derive(Tabled)]
+        struct Item {
+            index: usize,
+            weight: u16,
+            value: u16,
+        }
+
+
+        let mut items: Vec<Item> = Vec::with_capacity(self.total_items);
+        for i in 0..self.total_items {
+            if subset.is_bit_set(i) {
+                items.push(Item {
+                    index: i,
+                    weight: self.weights[i],
+                    value: self.values[i]
+                })
             }
-        })
+        }
+
+        let table = Table::new(&items).to_string();
+        println!("{}", table);
     }
 
     fn solve(&self) -> (BitString, u64) {
@@ -69,8 +105,11 @@ impl Knapsack {
         // we ignore the 0 bit string since it doesn't have any value
         let mut bit_str = BitString::new(0);
 
-        let mut max_value = u64::MIN;
+        let mut max_value = 0;
         let mut best_subset = BitString::new(0);
+
+        let mut current_weight = 0;
+        let mut current_value = 0;
 
         let n = 1 << self.total_items;
 
@@ -82,19 +121,30 @@ impl Knapsack {
                 .unwrap(),
             );
 
-        for i in (1..n).progress_with(pb) {
+
+        for i in 1..n {
             let lsb = BitString::new(i).least_significant_bit();
             bit_str.flip_bit(lsb);
 
-            let (value, weight) = self.compute_value_and_weight(bit_str);
+            if bit_str.is_bit_set(lsb) {
+                current_weight += self.weights[lsb] as u64;
+                current_value += self.values[lsb] as u64;
+            } else {
+                current_weight -= self.weights[lsb] as u64;
+                current_value -= self.values[lsb] as u64;
+            }
 
-            if weight > self.max_weight {
+            if current_weight > self.max_weight {
                 continue
             }
 
-            if max_value < value {
-                max_value = value;
+            if max_value < current_value {
+                max_value = current_value;
                 best_subset = bit_str;
+            }
+
+            if i % 1_000_000 == 0 {
+                pb.set_position(i);
             }
         }
 
@@ -105,7 +155,7 @@ impl Knapsack {
 
 
 fn main() {
-    let size = 35;
+    let size = 30;
     let mut knapsack = Knapsack::new(1000, size);
 
     for _ in 0..size {
@@ -115,7 +165,10 @@ fn main() {
         knapsack.set_value_and_weight(value, weight);
     }
 
+    knapsack.print_weights_and_values();
+
     let (subset, value) = knapsack.solve();
 
-    println!("{subset} {value}");
+    println!("Best subset with value: {value}");
+    knapsack.print_best_subset(subset);
 }
