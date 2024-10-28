@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, time::Instant};
 use rand::Rng;
 use indicatif::{ProgressBar, ProgressStyle};
 
@@ -45,16 +45,21 @@ struct Knapsack {
 impl Knapsack {
     fn new(max_weight: u64, total_items: usize) -> Self {
         Self {
-            weights: Vec::with_capacity(total_items as usize),
-            values: Vec::with_capacity(total_items as usize),
+            weights: vec![0; total_items],
+            values: vec![0; total_items],
             max_weight,
             total_items,
         }
     }
 
-    fn set_value_and_weight(&mut self, value: u16, weight: u16) {
-        self.weights.push(weight);
-        self.values.push(value);
+
+    fn initialize_values(&mut self) {
+        for i in 0..self.total_items {
+            let weight = rand::thread_rng().gen_range(50..=100);
+            let value = rand::thread_rng().gen_range(100..=500);
+            self.weights[i] = weight;
+            self.values[i] = value;
+        }
     }
 
     fn print_weights_and_values(&self) {
@@ -152,23 +157,47 @@ impl Knapsack {
     }
 }
 
+use clap::Parser;
 
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Number of total tiems
+    #[arg(short, long)]
+    size: usize,
+
+    /// Number of times to run the experiment
+    #[arg(short, long, default_value_t = 3)]
+    trials: usize,
+}
 
 fn main() {
-    let size = 30;
-    let mut knapsack = Knapsack::new(1000, size);
+    let args = Args::parse();
 
-    for _ in 0..size {
-        let weight = rand::thread_rng().gen_range(50..=100);
-        let value = rand::thread_rng().gen_range(100..=500);
+    let mut knapsack = Knapsack::new(1000, args.size);
+    let mut trial_results: Vec<f64> = vec![];
 
-        knapsack.set_value_and_weight(value, weight);
+    for i in 0..args.trials {
+        println!("-------------------------------- TRIAL {i} --------------------------------");
+
+        knapsack.initialize_values();
+        knapsack.print_weights_and_values();
+
+        let now = Instant::now();
+        let (subset, value) = knapsack.solve();
+        let elapsed = now.elapsed().as_secs_f64();
+
+        trial_results.push(elapsed);
+
+        println!("Done! Took {elapsed} seconds");
+        println!("Best subset with value: {value} is");
+        knapsack.print_best_subset(subset);
+
+
+        println!("--------------------------------------------------------------------------");
+        println!();
+        println!();
     }
 
-    knapsack.print_weights_and_values();
-
-    let (subset, value) = knapsack.solve();
-
-    println!("Best subset with value: {value}");
-    knapsack.print_best_subset(subset);
+    println!("Took on average {}", trial_results.iter().sum::<f64>() / args.trials as f64);
 }
