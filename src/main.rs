@@ -167,35 +167,35 @@ use clap::Parser;
 #[command(version, about, long_about = None)]
 struct Args {
     /// Number of total items
-    #[arg(short, long)]
+    #[arg(long)]
     size: usize,
 
     /// Number of times to run the experiment
-    #[arg(short, long, default_value_t = 3)]
+    #[arg(long, default_value_t = 3)]
     trials: usize,
 
     /// Number of times to update the progress bar
-    #[arg(short, long, default_value_t = 1000)]
+    #[arg(long, default_value_t = 1000)]
     update_freq: u64,
 
     /// Weight Minimum
-    #[arg(short, long, default_value_t = 50)]
+    #[arg(long, default_value_t = 50)]
     weight_min: u16,
 
     /// Weight Maximum
-    #[arg(short, long, default_value_t = 100)]
+    #[arg(long, default_value_t = 100)]
     weight_max: u16,
 
     /// Value Minimum
-    #[arg(short, long, default_value_t = 100)]
+    #[arg(long, default_value_t = 100)]
     value_min: u16,
 
     /// Value Maximum
-    #[arg(short, long, default_value_t = 500)]
+    #[arg(long, default_value_t = 500)]
     value_max: u16,
 
     /// Knapsack Capacity
-    #[arg(short, long, default_value_t = 1000)]
+    #[arg(long, default_value_t = 1000)]
     knapsack_capacity: u64,
 }
 
