@@ -166,9 +166,9 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Number of total items
-    #[arg(long)]
-    size: usize,
+    /// Number of total items must be in the range [1, 50]
+    #[arg(long, value_parser = clap::value_parser!(u8).range(1..=50))]
+    size: u8,
 
     /// Number of times to run the experiment
     #[arg(long, default_value_t = 3)]
@@ -211,7 +211,7 @@ fn main() {
 
 
     (0..args.trials).into_par_iter().for_each(|i| {
-        let mut knapsack = Knapsack::new(args.size);
+        let mut knapsack = Knapsack::new(args.size as usize);
 
         let trial_results = trial_results.clone();
         let print_lock = print_lock.clone();
