@@ -40,8 +40,8 @@ impl Set {
         };
 
         for i in 0..config.total {
-            let weight = rng.gen_range(config.min_weight..config.max_weight);
-            let value = rng.gen_range(config.min_value..config.max_value);
+            let weight = rng.gen_range(config.min_weight..=config.max_weight);
+            let value = rng.gen_range(config.min_value..=config.max_value);
 
             set.items[i].weight = weight;
             set.items[i].value = value;
