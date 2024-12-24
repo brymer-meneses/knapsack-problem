@@ -1,4 +1,4 @@
-use std::{cmp, usize};
+use std::cmp;
 
 use crate::{Knapsack, Set};
 
@@ -28,7 +28,7 @@ pub fn bottom_up(set: &Set, capacity: usize) -> Knapsack {
         let item = set[i - 1];
 
         if v[i][j] != v[i - 1][j] {
-            knapsack.insert(i - 1);
+            knapsack.insert(item);
             j -= item.weight as usize;
         }
 

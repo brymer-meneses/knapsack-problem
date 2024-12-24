@@ -1,10 +1,11 @@
 use std::ops::Index;
 
 pub mod dynamic_programming;
+pub mod greedy;
 
 #[derive(Debug)]
 pub struct Set {
-    items: Vec<Item>,
+    pub items: Vec<Item>,
 }
 
 pub struct SetConfig {
@@ -53,6 +54,16 @@ impl Set {
         return Self { items };
     }
 
+    pub fn cloned_sort<F>(&self, f: F) -> Self
+    where
+        F: FnMut(&Item, &Item) -> std::cmp::Ordering,
+    {
+        let mut items = self.items.clone();
+        items.sort_by(f);
+
+        Self::new(items)
+    }
+
     pub fn len(&self) -> usize {
         self.items.len()
     }
@@ -67,19 +78,37 @@ impl Index<usize> for Set {
 
 #[derive(Debug)]
 pub struct Knapsack {
-    items: Vec<usize>,
+    items: Vec<Item>,
+
+    weight: usize,
+    value: usize,
 }
 
 impl Knapsack {
     pub fn new() -> Self {
-        return Self { items: Vec::new() };
+        return Self {
+            items: Vec::new(),
+            weight: 0,
+            value: 0,
+        };
     }
 
-    pub fn insert(&mut self, item: usize) {
+    pub fn insert(&mut self, item: Item) {
         self.items.push(item);
+
+        self.weight += item.weight as usize;
+        self.value += item.value as usize;
     }
 
-    pub fn items(&self, set: &Set) -> Vec<Item> {
-        self.items.iter().map(|i| set[*i]).collect()
+    pub fn weight(&self) -> usize {
+        return self.weight;
+    }
+
+    pub fn value(&self) -> usize {
+        return self.value;
+    }
+
+    pub fn items(&self) -> &[Item] {
+        return self.items.as_ref();
     }
 }

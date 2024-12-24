@@ -30,7 +30,7 @@ fn bottom_up_test() {
     let knapsack = dynamic_programming::bottom_up(&set, capacity);
 
     assert_eq!(
-        knapsack.items(&set),
+        knapsack.items(),
         vec![
             Item {
                 weight: 1,

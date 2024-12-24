@@ -20,5 +20,5 @@ fn main() {
 
     let knapsack = dynamic_programming::bottom_up(&set, capacity);
 
-    println!("{:?}", knapsack.items(&set));
+    println!("{:?}", knapsack);
 }
