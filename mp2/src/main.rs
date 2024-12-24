@@ -1,20 +1,21 @@
 use indicatif::ProgressStyle;
-use mp2::{Knapsack, Set, SetConfig};
+use mp2::{Knapsack, Set, SetGenerationConfig};
 
 fn main() {
     use mp2::{dynamic_programming, greedy};
     use std::thread;
-    // allocate a stack size of 100 MiB
+
+    // Launch a new thread for benchmarking the algorithms. If we don't the
+    // top down memoized dynamic programming algorithm will cause a segfault.
     let builder = thread::Builder::new().stack_size(1024 * 1024 * 100);
 
     let thread = builder
         .spawn(|| {
-            benchmark_algorithm(dynamic_programming::bottom_up);
-            benchmark_algorithm(dynamic_programming::top_down_memoized);
-
             benchmark_algorithm(greedy::smallest_weight_first);
             benchmark_algorithm(greedy::largest_value_first);
             benchmark_algorithm(greedy::greatest_worth_first);
+            benchmark_algorithm(dynamic_programming::top_down_memoized);
+            benchmark_algorithm(dynamic_programming::bottom_up);
         })
         .unwrap();
 
@@ -28,9 +29,6 @@ where
     use indicatif::ProgressBar;
     use rand::{rngs::StdRng, SeedableRng};
     use std::time::Instant;
-
-    let capacity = 1000;
-    let mut n = 100;
 
     let algorithm_name = std::any::type_name::<Algorithm>()
         .split("::")
@@ -55,19 +53,23 @@ where
         .unwrap(),
     );
 
-    while n <= 100_000 {
+    let capacity = 1000;
+    let config = SetGenerationConfig {
+        min_weight: 100,
+        max_weight: 1500,
+        min_value: 100,
+        max_value: 500,
+    };
+    for mut n in (100..=101_000).step_by(1000) {
         let mut trials = [0.0; 3];
+
+        if n > 100_000 {
+            n = 100_000;
+        }
 
         for i in 0..3 {
             let rng: StdRng = SeedableRng::seed_from_u64(n as u64 + i);
-            let config = SetConfig {
-                min_weight: 1,
-                max_weight: 3,
-                min_value: 10,
-                max_value: 30,
-                total: n,
-            };
-            let set = Set::new_random(config, rng);
+            let set = Set::new_random(config, n, rng);
 
             let now = Instant::now();
             let _knapsack = algorithm(&set, capacity);
@@ -78,12 +80,11 @@ where
 
         writer
             .write_record([
-                format!("{}", n),
-                format!("{}", trials.iter().sum::<f64>() / 3.0),
+                n.to_string(),
+                (trials.iter().sum::<f64>() / 3.0).to_string(),
             ])
             .unwrap();
 
-        n += 50;
-        bar.inc(50)
+        bar.inc(1000);
     }
 }

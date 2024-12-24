@@ -8,14 +8,13 @@ pub struct Set {
     pub items: Vec<Item>,
 }
 
-pub struct SetConfig {
+#[derive(Clone, Copy)]
+pub struct SetGenerationConfig {
     pub min_weight: u16,
     pub max_weight: u16,
 
     pub min_value: u16,
     pub max_value: u16,
-
-    pub total: usize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -28,18 +27,18 @@ use rand::rngs::StdRng;
 use rand::Rng;
 
 impl Set {
-    pub fn new_random(config: SetConfig, mut rng: StdRng) -> Self {
+    pub fn new_random(config: SetGenerationConfig, total: usize, mut rng: StdRng) -> Self {
         let mut set = Self {
             items: vec![
                 Item {
                     weight: 0,
                     value: 0,
                 };
-                config.total
+                total
             ],
         };
 
-        for i in 0..config.total {
+        for i in 0..total {
             let weight = rng.gen_range(config.min_weight..=config.max_weight);
             let value = rng.gen_range(config.min_value..=config.max_value);
 
