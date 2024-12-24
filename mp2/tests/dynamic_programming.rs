@@ -51,3 +51,54 @@ fn bottom_up_test() {
         ]
     )
 }
+
+#[test]
+fn top_down_memoized() {
+    let set = Set::new(vec![
+        Item {
+            weight: 2,
+            value: 29,
+        },
+        Item {
+            weight: 2,
+            value: 23,
+        },
+        Item {
+            weight: 1,
+            value: 18,
+        },
+        Item {
+            weight: 1,
+            value: 13,
+        },
+        Item {
+            weight: 1,
+            value: 15,
+        },
+    ]);
+    let capacity = 5;
+
+    let knapsack = dynamic_programming::top_down_memoized(&set, capacity);
+
+    assert_eq!(
+        knapsack.items(),
+        vec![
+            Item {
+                weight: 1,
+                value: 15
+            },
+            Item {
+                weight: 1,
+                value: 13,
+            },
+            Item {
+                weight: 1,
+                value: 18
+            },
+            Item {
+                weight: 2,
+                value: 29
+            }
+        ]
+    )
+}
