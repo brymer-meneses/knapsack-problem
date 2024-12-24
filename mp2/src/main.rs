@@ -1,13 +1,24 @@
+use std::thread;
+
 use mp2::{dynamic_programming, greedy, Knapsack};
 use mp2::{Set, SetConfig};
 
 fn main() {
-    benchmark_algorithm(dynamic_programming::bottom_up);
-    benchmark_algorithm(dynamic_programming::top_down_memoized);
+    // allocate a stack size of 100 MiB
+    let builder = thread::Builder::new().stack_size(1024 * 1024 * 100);
 
-    benchmark_algorithm(greedy::smallest_weight_first);
-    benchmark_algorithm(greedy::largest_value_first);
-    benchmark_algorithm(greedy::greatest_worth_first);
+    let thread = builder
+        .spawn(|| {
+            benchmark_algorithm(dynamic_programming::bottom_up);
+            benchmark_algorithm(dynamic_programming::top_down_memoized);
+
+            benchmark_algorithm(greedy::smallest_weight_first);
+            benchmark_algorithm(greedy::largest_value_first);
+            benchmark_algorithm(greedy::greatest_worth_first);
+        })
+        .unwrap();
+
+    thread.join().unwrap();
 }
 
 fn benchmark_algorithm<Algorithm>(algorithm: Algorithm)
