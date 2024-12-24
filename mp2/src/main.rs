@@ -1,9 +1,9 @@
-use std::thread;
-
-use mp2::{dynamic_programming, greedy, Knapsack};
-use mp2::{Set, SetConfig};
+use indicatif::ProgressStyle;
+use mp2::{Knapsack, Set, SetConfig};
 
 fn main() {
+    use mp2::{dynamic_programming, greedy};
+    use std::thread;
     // allocate a stack size of 100 MiB
     let builder = thread::Builder::new().stack_size(1024 * 1024 * 100);
 
@@ -25,18 +25,41 @@ fn benchmark_algorithm<Algorithm>(algorithm: Algorithm)
 where
     Algorithm: Fn(&Set, usize) -> Knapsack,
 {
+    use indicatif::ProgressBar;
     use rand::{rngs::StdRng, SeedableRng};
     use std::time::Instant;
 
-    println!("Testing {}", std::any::type_name::<Algorithm>());
     let capacity = 1000;
     let mut n = 100;
 
-    while n <= 100_000 {
-        let mut trials = vec![];
+    let algorithm_name = std::any::type_name::<Algorithm>()
+        .split("::")
+        .last()
+        .unwrap();
 
-        for _ in 0..3 {
-            let rng: StdRng = SeedableRng::seed_from_u64(n as u64);
+    let csv_path = format!("{}.csv", algorithm_name);
+
+    if std::fs::exists(&csv_path).unwrap() {
+        std::fs::remove_file(&csv_path).expect("Cannot remove file");
+    }
+
+    let mut writer = csv::Writer::from_path(csv_path).unwrap();
+    writer.write_record(["n", "seconds"]).unwrap();
+
+    let bar = ProgressBar::new(100_000);
+    bar.set_message(algorithm_name);
+    bar.set_style(
+        ProgressStyle::with_template(
+            "{msg} [{elapsed_precise}] [{bar:40.cyan/blue}] ({pos}/{len}, ETA {eta})",
+        )
+        .unwrap(),
+    );
+
+    while n <= 100_000 {
+        let mut trials = [0.0; 3];
+
+        for i in 0..3 {
+            let rng: StdRng = SeedableRng::seed_from_u64(n as u64 + i);
             let config = SetConfig {
                 min_weight: 1,
                 max_weight: 3,
@@ -50,11 +73,17 @@ where
             let _knapsack = algorithm(&set, capacity);
 
             let elapsed = now.elapsed().as_secs_f64();
-            trials.push(elapsed);
+            trials[i as usize] = elapsed;
         }
 
-        println!("n: {} = {}", n, trials.iter().sum::<f64>() / 3.0);
+        writer
+            .write_record([
+                format!("{}", n),
+                format!("{}", trials.iter().sum::<f64>() / 3.0),
+            ])
+            .unwrap();
 
-        n *= 10;
+        n += 50;
+        bar.inc(50)
     }
 }
