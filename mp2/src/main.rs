@@ -42,7 +42,9 @@ where
     }
 
     let mut writer = csv::Writer::from_path(csv_path).unwrap();
-    writer.write_record(["n", "seconds"]).unwrap();
+    writer
+        .write_record(["n", "trial 1", "trial 2", "trial 3", "average"])
+        .unwrap();
 
     let bar = ProgressBar::new(100_000);
     bar.set_message(algorithm_name);
@@ -79,10 +81,16 @@ where
         }
 
         writer
-            .write_record([
-                n.to_string(),
-                (trials.iter().sum::<f64>() / 3.0).to_string(),
-            ])
+            .write_record(
+                [
+                    n as f64,
+                    trials[0],
+                    trials[1],
+                    trials[2],
+                    (trials.iter().sum::<f64>() / 3.0),
+                ]
+                .map(|e| e.to_string()),
+            )
             .unwrap();
 
         bar.inc(1000);
