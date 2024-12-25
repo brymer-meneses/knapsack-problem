@@ -2,6 +2,7 @@ use std::ops::Index;
 
 pub mod dynamic_programming;
 pub mod greedy;
+pub mod utils;
 
 #[derive(Debug)]
 pub struct Set {
