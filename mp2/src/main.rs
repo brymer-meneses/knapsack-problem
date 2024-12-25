@@ -35,7 +35,7 @@ where
         .last()
         .unwrap();
 
-    let csv_path = format!("{}.csv", algorithm_name);
+    let csv_path = format!("results/{}.csv", algorithm_name);
 
     if std::fs::exists(&csv_path).unwrap() {
         std::fs::remove_file(&csv_path).expect("Cannot remove file");
@@ -106,7 +106,7 @@ fn analyze_bottom_up() {
     use indicatif::ProgressBar;
     use rand::{rngs::StdRng, SeedableRng};
 
-    let csv_path = "bottom_up.csv";
+    let csv_path = "results/bottom_up.csv";
     if std::fs::exists(&csv_path).unwrap() {
         std::fs::remove_file(&csv_path).expect("Cannot remove file");
     }
@@ -193,7 +193,7 @@ fn analyze_top_down() {
     use indicatif::ProgressBar;
     use rand::{rngs::StdRng, SeedableRng};
 
-    let csv_path = "top_down_memoized.csv";
+    let csv_path = "results/top_down_memoized.csv";
     if std::fs::exists(&csv_path).unwrap() {
         std::fs::remove_file(&csv_path).expect("Cannot remove file");
     }
@@ -264,7 +264,7 @@ fn analyze_top_down() {
             tables[i] = elapsed_table;
             backtracks[i] = elapsed_backtrack;
             cache_hits[i] = metrics.cache_hit as f64;
-            cache_misses[i] = metrics.cache_hit as f64;
+            cache_misses[i] = metrics.cache_miss as f64;
         }
 
         writer
