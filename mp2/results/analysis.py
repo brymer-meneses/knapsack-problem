@@ -1,11 +1,11 @@
-import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
-from plotly.subplots import make_subplots
-import numpy as np
-from scipy.stats import f_oneway, kruskal, mannwhitneyu
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from scipy import stats
+from scipy.stats import f_oneway, kruskal, mannwhitneyu
 
 # Load data
 bottom_up = pd.read_csv("bottom_up.csv")
@@ -362,128 +362,4 @@ cache_performance.write_html("cache_performance.html")
 # arc browser (approx 5 tabs?)
 # ghostty (terminal)
 # messenger
-
-def perform_optimality_analysis():
-    # Calculate average values across trials
-    dp_values = np.mean([bottom_up['table 1'], bottom_up['table 2'], bottom_up['table 3']], axis=0)
-    algorithms = {
-        'Greatest Worth First': np.mean([
-            greatest_worth_first['value 1'],
-            greatest_worth_first['value 2'],
-            greatest_worth_first['value 3']
-        ], axis=0),
-        'Largest Value First': np.mean([
-            largest_value_first['value 1'],
-            largest_value_first['value 2'],
-            largest_value_first['value 3']
-        ], axis=0),
-        'Smallest Weight First': np.mean([
-            smallest_weight_first['value 1'],
-            smallest_weight_first['value 2'],
-            smallest_weight_first['value 3']
-        ], axis=0)
-    }
-    
-    # Calculate approximation ratios (optimal/greedy)
-    approximation_ratios = {}
-    for name, values in algorithms.items():
-        # Changed to divide optimal by greedy
-        ratios = dp_values / values
-        approximation_ratios[name] = ratios
-    
-    return approximation_ratios
-
-def analyze_greedy_optimality():
-    print("\nGreedy Algorithms Optimality Analysis")
-    print("=====================================")
-    
-    # First get the approximation ratios
-    approximation_ratios = perform_optimality_analysis()
-    
-    # 1. Basic Statistical Summary
-    print("\n1. Basic Statistical Summary")
-    print("---------------------------")
-    for name, ratios in approximation_ratios.items():
-        print(f"\n{name}:")
-        print(f"Mean Optimality: {np.mean(ratios):.6%}")
-        print(f"Median Optimality: {np.median(ratios):.6%}")
-        print(f"Standard Deviation: {np.std(ratios):.6%}")
-        print(f"95% Confidence Interval: [{np.percentile(ratios, 2.5):.6%}, {np.percentile(ratios, 97.5):.6%}]")
-    
-    # 2. Create violin plot for distribution comparison
-    fig = go.Figure()
-    
-    colors = {
-        'Greatest Worth First': 'rgba(0, 128, 0, 0.7)',
-        'Largest Value First': 'rgba(128, 0, 128, 0.7)',
-        'Smallest Weight First': 'rgba(255, 165, 0, 0.7)'
-    }
-    
-    for name, ratios in approximation_ratios.items():
-        fig.add_trace(go.Violin(
-            y=ratios,
-            name=name,
-            box_visible=True,
-            meanline_visible=True,
-            fillcolor=colors[name],
-            line_color='black'
-        ))
-    
-    fig.update_layout(
-        title='Distribution of Solution Optimality by Algorithm',
-        yaxis_title='Optimality Ratio',
-        yaxis_tickformat=',.6%',
-        template='plotly_white',
-        showlegend=True,
-        violinmode='group'
-    )
-    
-    fig.write_html("optimality_distribution.html")
-    
-    # 3. Statistical Tests Summary
-    print("\n2. Statistical Analysis")
-    print("---------------------")
-    
-    # One-way ANOVA
-    f_stat, p_value = f_oneway(*approximation_ratios.values())
-    print("\nOne-way ANOVA Test:")
-    print(f"F-statistic: {f_stat:.8f}")
-    print(f"p-value: {p_value:.8e}")
-    
-    # Effect size (Eta-squared)
-    def calculate_eta_squared(f_stat, groups):
-        n = sum(len(group) for group in groups)
-        k = len(groups)
-        return (f_stat * (k-1)) / (f_stat * (k-1) + (n-k))
-    
-    eta_squared = calculate_eta_squared(f_stat, list(approximation_ratios.values()))
-    print(f"Effect size (η²): {eta_squared:.8f}")
-    
-    # 4. Practical Significance Analysis
-    print("\n3. Practical Significance Analysis")
-    print("--------------------------------")
-    
-    # Calculate percentage of solutions within different optimality thresholds
-    thresholds = [0.95, 0.90, 0.85, 0.80]
-    
-    print("\nPercentage of solutions within optimality thresholds:")
-    for name, ratios in approximation_ratios.items():
-        print(f"\n{name}:")
-        for threshold in thresholds:
-            percentage = np.mean(ratios >= threshold) * 100
-            print(f"≥ {threshold:.0%} optimal: {percentage:.6f}%")
-    
-    # 5. Consistency Analysis
-    print("\n4. Consistency Analysis")
-    print("---------------------")
-    
-    for name, ratios in approximation_ratios.items():
-        cv = np.std(ratios) / np.mean(ratios)  # Coefficient of variation
-        print(f"\n{name}:")
-        print(f"Coefficient of Variation: {cv:.8f}")
-        print(f"Minimum Optimality: {np.min(ratios):.6%}")
-        print(f"Maximum Optimality: {np.max(ratios):.6%}")
-        print(f"Optimality Range: {np.max(ratios) - np.min(ratios):.6%}")
-
-# Run the analysis
-analyze_greedy_optimality()
+ 
