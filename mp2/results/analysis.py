@@ -362,4 +362,73 @@ cache_performance.write_html("cache_performance.html")
 # arc browser (approx 5 tabs?)
 # ghostty (terminal)
 # messenger
- 
+
+# Extract n values
+n_values = bottom_up['n'].values  # Knapsack capacities
+
+# Calculate average optimal values from bottom_up
+optimal_values = bottom_up[['value 1', 'value 2', 'value 3']].mean(axis=1).values  # Average of value 1, 2, and 3
+
+# Average trial results for each greedy algorithm
+greatest_worth_avg = [
+    greatest_worth_first[['value 1', 'value 2', 'value 3']].mean(axis=1).values  # Average of value 1, 2, and 3
+]
+
+largest_value_avg = [
+    largest_value_first[['value 1', 'value 2', 'value 3']].mean(axis=1).values
+]
+
+smallest_weight_avg = [
+    smallest_weight_first[['value 1', 'value 2', 'value 3']].mean(axis=1).values
+]
+
+# Prepare data for plotting
+# Create the plot
+fig = go.Figure()
+
+# Add trace for the average of Greatest Worth First algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=greatest_worth_avg[0],
+    mode='lines+markers',
+    name='Greatest Worth First (Average)',
+    line=dict(color='blue')
+))
+
+# Add trace for the average of Largest Value First algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=largest_value_avg[0],
+    mode='lines+markers',
+    name='Largest Value First (Average)',
+    line=dict(color='red')
+))
+
+# Add trace for the average of Smallest Weight First algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=smallest_weight_avg[0],
+    mode='lines+markers',
+    name='Smallest Weight First (Average)',
+    line=dict(color='orange')
+))
+
+# Add trace for average optimal values
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=optimal_values,
+    mode='lines+markers',
+    name='Optimal Values (Average)',
+    line=dict(color='green', dash='dash')
+))
+
+# Update layout
+fig.update_layout(
+    title='Comparison of Greedy Algorithms vs Average Optimal Values',
+    xaxis_title='Number of Items (n)',
+    yaxis_title='Average Total Value',
+    template='plotly_white'
+)
+
+# Save the plot as an HTML file
+fig.write_html("greedy_vs_optimal_comparison.html")
