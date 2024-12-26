@@ -13,7 +13,7 @@ use indicatif::ProgressStyle;
 use mp2::{dynamic_programming, utils, Knapsack, Set, SetGenerationConfig};
 
 fn analysis_main() {
-    use mp2::{dynamic_programming, greedy};
+    use mp2::greedy;
 
     analyze_greedy_algorithm(greedy::smallest_weight_first);
     analyze_greedy_algorithm(greedy::largest_value_first);
@@ -123,6 +123,9 @@ fn analyze_bottom_up() {
             "backtrack 2",
             "backtrack 3",
             "average",
+            "value 1",
+            "value 2",
+            "value 3",
         ])
         .unwrap();
 
@@ -149,23 +152,25 @@ fn analyze_bottom_up() {
     for mut n in (100..=101_000).step_by(1000) {
         let mut tables = [0.0; 3];
         let mut backtracks = [0.0; 3];
+        let mut values = [0.0; 3];
 
         if n > 100_000 {
             n = 100_000;
         }
 
         for i in 0..3 {
-            let rng: StdRng = SeedableRng::seed_from_u64(n as u64 + i);
+            let rng: StdRng = SeedableRng::seed_from_u64(n as u64 + i as u64);
             let set = Set::new_random(config, n, rng);
 
             let (elapsed_table, v) =
                 utils::time(|| dynamic_programming::create_bottom_up_table(&set, capacity));
 
-            let (elapsed_backtrack, _) =
+            let (elapsed_backtrack, knapsack) =
                 utils::time(|| dynamic_programming::backtrack(&set, capacity, v));
 
-            tables[i as usize] = elapsed_table;
-            backtracks[i as usize] = elapsed_backtrack;
+            tables[i] = elapsed_table;
+            backtracks[i] = elapsed_backtrack;
+            values[i] = knapsack.value() as f64;
         }
 
         writer
@@ -180,6 +185,9 @@ fn analyze_bottom_up() {
                     backtracks[1],
                     backtracks[2],
                     (backtracks.iter().sum::<f64>() / 3.0),
+                    values[0],
+                    values[1],
+                    values[2],
                 ]
                 .map(|e| e.to_string()),
             )
