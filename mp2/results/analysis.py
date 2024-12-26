@@ -242,35 +242,44 @@ print(f"p-value: {p_value:.4e}")
 def create_dp_time_comparison():
     fig = go.Figure()
     
+    # Bottom-up trace
     fig.add_trace(go.Scatter(
         x=n_values,
         y=bottom_up_avg,
         name='Bottom-up',
         mode='lines+markers',
-        marker=dict(symbol='circle'),
-        text=['Bottom-up' for _ in n_values],
+        marker=dict(symbol='circle', size=6),
+        showlegend=False  # Remove from legend
     ))
     
+    # Top-down trace
     fig.add_trace(go.Scatter(
         x=n_values,
         y=top_down_avg,
         name='Top-down Memoized',
         mode='lines+markers',
-        marker=dict(symbol='square'),
-        text=['Top-down Memoized' for _ in n_values],
+        marker=dict(symbol='square', size=6),
+        showlegend=False  # Remove from legend
     ))
     
-    # Add annotations directly on the plot instead of using a legend
+    # Add labels directly on the lines at appropriate positions
+    # Find positions near the end of the data for label placement
+    x_pos = n_values[-10]  # Use the position 10 from the end
+    
     fig.add_annotation(
-        x=80000, y=0.15,
+        x=x_pos,
+        y=bottom_up_avg[-10],
         text="Bottom-up",
-        showarrow=False
+        showarrow=False,
+        yshift=10
     )
     
     fig.add_annotation(
-        x=80000, y=0.08,
+        x=x_pos,
+        y=top_down_avg[-10],
         text="Top-down Memoized",
-        showarrow=False
+        showarrow=False,
+        yshift=-10
     )
     
     fig.update_layout(
@@ -287,6 +296,9 @@ def create_dp_time_comparison():
 def create_cache_performance():
     fig = go.Figure()
     
+    # Calculate midpoints for label placement
+    mid_index = len(n_values) // 2
+    
     # Create stacked area plot
     fig.add_trace(go.Scatter(
         x=n_values,
@@ -295,7 +307,8 @@ def create_cache_performance():
         mode='none',
         fill='tonexty',
         stackgroup='one',
-        hovertemplate='Cache Hits: %{y:,.0f}<extra></extra>'
+        hovertemplate='Cache Hits: %{y:,.0f}<extra></extra>',
+        showlegend=False
     ))
     
     fig.add_trace(go.Scatter(
@@ -305,21 +318,33 @@ def create_cache_performance():
         mode='none',
         fill='tonexty',
         stackgroup='one',
-        hovertemplate='Cache Misses: %{y:,.0f}<extra></extra>'
+        hovertemplate='Cache Misses: %{y:,.0f}<extra></extra>',
+        showlegend=False
     ))
+    
+    # Add labels directly on the areas
+    fig.add_annotation(
+        x=n_values[mid_index],
+        y=cache_hits[mid_index]/2,  # Place in middle of hits area
+        text="Cache Hits",
+        showarrow=False,
+        font=dict(color='white')
+    )
+    
+    fig.add_annotation(
+        x=n_values[mid_index],
+        y=cache_hits[mid_index] + cache_misses[mid_index]/2,  # Place in middle of misses area
+        text="Cache Misses",
+        showarrow=False,
+        font=dict(color='white')
+    )
     
     fig.update_layout(
         title='Cache Performance in Top-down Memoization',
         xaxis_title='Number of Items (n)',
         yaxis_title='Number of Operations',
         template='plotly_white',
-        # Position legend at the top right
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="right",
-            x=0.99
-        )
+        showlegend=False
     )
     
     return fig
