@@ -203,6 +203,10 @@ execution_comparison.write_html("execution_comparison.html")
 dp_metrics.write_html("dp_metrics.html")
 greedy_comparison.write_html("greedy_comparison.html")
 
+execution_comparison.write_image("execution_comparison.png")
+dp_metrics.write_image("dp_metrics.png")
+greedy_comparison.write_image("greedy_comparison.png")
+
 # Print statistical summary
 print("\nStatistical Summary:")
 print("\nDynamic Programming Algorithms:")
@@ -356,6 +360,9 @@ cache_performance = create_cache_performance()
 dp_comparison.write_html("dp_comparison.html")
 cache_performance.write_html("cache_performance.html")
 
+dp_comparison.write_image("dp_comparison.png")
+cache_performance.write_image("cache_performance.png")
+
 # note:
 # applications running:
 # discord
@@ -427,7 +434,9 @@ fig.update_layout(
     title='Comparison of Greedy Algorithms vs Average Optimal Values',
     xaxis_title='Number of Items (n)',
     yaxis_title='Average Total Value',
-    template='plotly_white'
+    template='plotly_white',
+    width=1200, 
+    height=800,
 )
 
 # Save the plot as an HTML file
