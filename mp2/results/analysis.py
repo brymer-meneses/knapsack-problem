@@ -1,11 +1,9 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from scipy import stats
-from scipy.stats import f_oneway, kruskal, mannwhitneyu
+from scipy.stats import f_oneway
 
 # Load data
 bottom_up = pd.read_csv("bottom_up.csv")
@@ -13,14 +11,13 @@ top_down_memoized = pd.read_csv("top_down_memoized.csv")
 greatest_worth_first = pd.read_csv("greatest_worth_first.csv")
 largest_value_first = pd.read_csv("largest_value_first.csv")
 smallest_weight_first = pd.read_csv("smallest_weight_first.csv")
-
 # After loading CSV files and before creating visualizations
 # Extract n_values and averages for plotting
 n_values = bottom_up['n'].values
 bottom_up_avg = bottom_up['average'].values
 top_down_avg = top_down_memoized['average'].values
 cache_hits = top_down_memoized['average.3'].values  # Cache hits column
-cache_misses = top_down_memoized['average.2'].values  # Cache misses column
+cache_misses = top_down_memoized['average.2'].values  # Cache misses columnb
 
 # Calculate statistics for each algorithm
 def calculate_stats(df, time_columns):
@@ -203,9 +200,9 @@ execution_comparison.write_html("execution_comparison.html")
 dp_metrics.write_html("dp_metrics.html")
 greedy_comparison.write_html("greedy_comparison.html")
 
-execution_comparison.write_image("execution_comparison.png")
-dp_metrics.write_image("dp_metrics.png")
-greedy_comparison.write_image("greedy_comparison.png")
+# execution_comparison.write_image("execution_comparison.png")
+# dp_metrics.write_image("dp_metrics.png")
+# greedy_comparison.write_image("greedy_comparison.png")
 
 # Print statistical summary
 print("\nStatistical Summary:")
@@ -360,8 +357,8 @@ cache_performance = create_cache_performance()
 dp_comparison.write_html("dp_comparison.html")
 cache_performance.write_html("cache_performance.html")
 
-dp_comparison.write_image("dp_comparison.png")
-cache_performance.write_image("cache_performance.png")
+# dp_comparison.write_image("dp_comparison.png")
+# cache_performance.write_image("cache_performance.png")
 
 # note:
 # applications running:
@@ -441,6 +438,7 @@ fig.update_layout(
 
 # Save the plot as an HTML file
 fig.write_html("greedy_vs_optimal_comparison.html")
+# fig.write_image("greedy_vs_optimal_comparison.png")
 
 # Assuming you have running time data for each algorithm
 # For demonstration, let's create some mock running time data
@@ -511,6 +509,7 @@ fig.update_layout(
 
 # Save the plot as an HTML file
 fig.write_html("greedy_running_time_vs_theoretical_efficiency.html")
+# fig.write_image("greedy_running_time_vs_theoretical_efficiency.png")
 
 # Assuming you have running time data for the DP algorithm
 # Replace these with actual running time data from your experiments
@@ -560,7 +559,7 @@ fig.update_layout(
 
 # Save the plot as an HTML file
 fig.write_html("dp_algorithm_time_efficiency_vs_theoretical_efficiency.html")
-
+# fig.write_image("dp_algorithm_time_efficiency_vs_theoretical_efficiency.png")
 # Assuming you have running time data for both DP approaches
 # Replace these with actual running time data from your experiments
 bottom_up_time = np.random.uniform(0.1, 1.0, size=len(n_values))  # Mock data for Bottom-Up DP running time
@@ -619,3 +618,4 @@ fig.update_layout(
 
 # Save the plot as an HTML file
 fig.write_html("dp_algorithm_time_efficiency_vs_theoretical_efficiency.html")
+# fig.write_image("dp_algorithm_time_efficiency_vs_theoretical_efficiency.png")
