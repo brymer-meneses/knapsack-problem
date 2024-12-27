@@ -432,3 +432,181 @@ fig.update_layout(
 
 # Save the plot as an HTML file
 fig.write_html("greedy_vs_optimal_comparison.html")
+
+# Assuming you have running time data for each algorithm
+# For demonstration, let's create some mock running time data
+# Replace these with actual running time data from your experiments
+greatest_worth_time = np.random.uniform(0.1, 1.0, size=len(n_values))  # Mock data
+largest_value_time = np.random.uniform(0.1, 1.0, size=len(n_values))  # Mock data
+smallest_weight_time = np.random.uniform(0.1, 1.0, size=len(n_values))  # Mock data
+
+# Calculate n log n values
+n_log_n = n_values * np.log(n_values)
+
+# Create the plot
+fig = go.Figure()
+
+# Add trace for the running time of Greatest Worth First algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=greatest_worth_time,
+    mode='lines+markers',
+    name='Greatest Worth First (Running Time)',
+    line=dict(color='blue')
+))
+
+# Add trace for the running time of Largest Value First algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=largest_value_time,
+    mode='lines+markers',
+    name='Largest Value First (Running Time)',
+    line=dict(color='red')
+))
+
+# Add trace for the running time of Smallest Weight First algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=smallest_weight_time,
+    mode='lines+markers',
+    name='Smallest Weight First (Running Time)',
+    line=dict(color='orange')
+))
+
+# Add trace for n log n
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=n_log_n,
+    mode='lines',
+    name='Theoretical Efficiency (n log n)',
+    line=dict(color='purple', dash='dash')
+))
+
+# Add shaded area for n log n
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=n_log_n,
+    mode='none',
+    fill='tozeroy',
+    fillcolor='rgba(128, 0, 128, 0.2)',  # Light purple shade
+    name='Shaded Area for n log n'
+))
+
+# Update layout
+fig.update_layout(
+    title='Running Time of Greedy Algorithms vs Theoretical Efficiency',
+    xaxis_title='Number of Items (n)',
+    yaxis_title='Running Time (seconds)',
+    template='plotly_white'
+)
+
+# Save the plot as an HTML file
+fig.write_html("greedy_running_time_vs_theoretical_efficiency.html")
+
+# Assuming you have running time data for the DP algorithm
+# Replace these with actual running time data from your experiments
+dp_time = np.random.uniform(0.1, 1.0, size=len(n_values))  # Mock data for DP running time
+
+# Calculate theoretical efficiency (O(n^2) for example)
+theoretical_efficiency = n_values ** 2  # This is a common theoretical efficiency for DP
+
+# Create the plot
+fig = go.Figure()
+
+# Add trace for the running time of the DP algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=dp_time,
+    mode='lines+markers',
+    name='DP Algorithm Running Time',
+    line=dict(color='blue')
+))
+
+# Add trace for theoretical efficiency
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=theoretical_efficiency,
+    mode='lines',
+    name='Theoretical Efficiency (O(n^2))',
+    line=dict(color='purple', dash='dash')
+))
+
+# Add shaded area for theoretical efficiency
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=theoretical_efficiency,
+    mode='none',
+    fill='tozeroy',
+    fillcolor='rgba(128, 0, 128, 0.2)',  # Light purple shade
+    name='Shaded Area for Theoretical Efficiency'
+))
+
+# Update layout
+fig.update_layout(
+    title='DP Algorithm Time Efficiency vs Theoretical Efficiency',
+    xaxis_title='Number of Items (n)',
+    yaxis_title='Running Time (seconds)',
+    template='plotly_white'
+)
+
+# Save the plot as an HTML file
+fig.write_html("dp_algorithm_time_efficiency_vs_theoretical_efficiency.html")
+
+# Assuming you have running time data for both DP approaches
+# Replace these with actual running time data from your experiments
+bottom_up_time = np.random.uniform(0.1, 1.0, size=len(n_values))  # Mock data for Bottom-Up DP running time
+top_down_time = np.random.uniform(0.1, 1.0, size=len(n_values))  # Mock data for Top-Down Memoization running time
+
+# Calculate theoretical efficiency (O(n^2) for example)
+theoretical_efficiency = n_values ** 2  # This is a common theoretical efficiency for DP
+
+# Create the plot
+fig = go.Figure()
+
+# Add trace for the running time of the Bottom-Up DP algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=bottom_up_time,
+    mode='lines+markers',
+    name='Bottom-Up DP Running Time',
+    line=dict(color='blue')
+))
+
+# Add trace for the running time of the Top-Down Memoization algorithm
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=top_down_time,
+    mode='lines+markers',
+    name='Top-Down Memoization Running Time',
+    line=dict(color='red')
+))
+
+# Add trace for theoretical efficiency
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=theoretical_efficiency,
+    mode='lines',
+    name='Theoretical Efficiency (O(n^2))',
+    line=dict(color='purple', dash='dash')
+))
+
+# Add shaded area for theoretical efficiency
+fig.add_trace(go.Scatter(
+    x=n_values,
+    y=theoretical_efficiency,
+    mode='none',
+    fill='tozeroy',
+    fillcolor='rgba(128, 0, 128, 0.2)',  # Light purple shade
+    name='Shaded Area for Theoretical Efficiency'
+))
+
+# Update layout
+fig.update_layout(
+    title='DP Algorithm Time Efficiency vs Theoretical Efficiency',
+    xaxis_title='Number of Items (n)',
+    yaxis_title='Running Time (seconds)',
+    template='plotly_white'
+)
+
+# Save the plot as an HTML file
+fig.write_html("dp_algorithm_time_efficiency_vs_theoretical_efficiency.html")
