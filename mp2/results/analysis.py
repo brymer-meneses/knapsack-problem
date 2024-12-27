@@ -441,6 +441,7 @@ fig.write_html("greedy_vs_optimal_comparison.html")
 
 import scipy
 
+
 def analyze_time_complexity(theoretical_time, n_values, measured_times):
     X = n_values
     
@@ -465,7 +466,7 @@ smallest_weight_first_fit = analyze_time_complexity(lambda n, c: c * n * np.log(
 
 algorithms = [
     {
-        "title": "Bottom Up Vs Theoretical Efficiency O(nW)",
+        "title": "Bottom Up Vs Theoretical Efficiency ϴ(nW)",
         "name": "Bottom Up",
         "filename": "bottom_up_vs_theoretical.html",
         "X": bottom_up["average"],
@@ -475,7 +476,7 @@ algorithms = [
         "error": bottom_up_fit["error"]
     },
     {
-        "title": "Top Down Memoized Vs Theoretical Efficiency O(nW)",
+        "title": "Top Down Memoized Vs Theoretical Efficiency ϴ(nW)",
         "name": "Top Down Memoized",
         "filename": "top_down_memoized_vs_theoretical.html",
         "X": top_down_memoized["average"],
